@@ -76,13 +76,17 @@ Article* createArticleInteractively() {
         printf("Autor/ Interpret (wenn vorhanden): ");
         fgets(buf, sizeof(buf), stdin);
         buf[strlen(buf)-1] = '\0';
-        a->author = malloc((strlen(buf)+1));
-        if (a->author) {
-            strcpy(a->author, buf);
-        } else {
-            printf("ERROR::%d::%s: allocating author\n", __LINE__, __FILE__);
-            free(a);
-            return NULL;
+        if (strlen(buf)) { // not empty
+            a->author = malloc((strlen(buf)+1));
+            if (a->author) {
+                strcpy(a->author, buf);
+            } else {
+                printf("ERROR::%d::%s: allocating author\n", __LINE__, __FILE__);
+                free(a);
+                return NULL;
+            }
+        } else { // empty
+            a->author = NULL;
         }
         // lender
         printf("ausleihende Person: ");
@@ -117,7 +121,11 @@ void printArticle(Article* a) {
 }
 
 int writeArticle(FILE* pf, Article* a) {
+    if (pf == NULL) {
+        perror("Error: ");
+    }
     if (a) {
+        printf("%p\n", a->author);
         return fprintf(pf, "%d,%d,%s,%s,%s\n", a->id, a->media, a->title, a->author == NULL ? "-1" : a->author, a->lender);
     } else {
         printf("ERROR::%d::%s: article was NULL\n", __LINE__, __FILE__);
@@ -179,7 +187,6 @@ Article* readArticle(FILE* pf) {
 }
 
 void deleteArticle(Article* a) {
-    // does it catch everything?
     free(a);
 }
 
