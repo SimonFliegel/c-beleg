@@ -43,6 +43,7 @@ Article* createArticleInteractively();
 /**
  * Prints a given article to the console.
  * @param pArticle pointer to struct article
+ * @return void
 */
 void printArticle(Article* pArticle);
 
@@ -63,5 +64,6 @@ Article* readArticle(FILE* pf);
 
 /**
  * @param pointer to struct Article
+ * @return void
 */
 void deleteArticle(Article* pArticle);

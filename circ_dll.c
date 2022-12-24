@@ -100,6 +100,10 @@ int removeFirst(List* pList) {
     return removeNode(pList->head.pNext);
 }
 
+void setCurrentToHead(List* pList) {
+    pList->pCurr = pList->head.pNext;
+}
+
 void* getCurrent(List* pList) {
     if (pList->pCurr == NULL) {
         printf("ERROR::%d::%s: pCurr==NULL\n", __LINE__, __FILE__);
@@ -167,11 +171,21 @@ int getLength(List* pList) {
     return n;
 }
 
+int hasNext(List* pList) {
+    if (pList->pCurr->pNext->pData) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 void deleteList(List* pList) {
-    pList->pCurr = pList->head.pNext;
-    while (pList->pCurr->pData) {
-        pList->pCurr = pList->pCurr->pNext;
-        removeNode(pList->pCurr->pPrev);
+    if (pList) {
+        pList->pCurr = pList->head.pNext;
+        while (pList->pCurr->pData) {
+            pList->pCurr = pList->pCurr->pNext;
+            removeNode(pList->pCurr->pPrev);
+        }
     }
     free(pList);
 }

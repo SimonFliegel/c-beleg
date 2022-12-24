@@ -74,6 +74,13 @@ int removeLast(List* pList);
 int removeFirst(List* pList);
 
 /**
+ * Sets current node to first node.
+ * @param pList pointer to list
+ * @return void
+*/
+void setCurrentToHead(List* pList);
+
+/**
  * @param pList pointer to list
  * @return void* to data of current node
 */
@@ -99,6 +106,12 @@ void* getLast(List* pList);
  * @return void* to data of next node
 */
 void* getNext(List* pList);
+
+/**
+ * @param pList pointer to list
+ * @return 1 - true, 0 - false 
+*/
+int hasNext(List* pList);
 
 /**
  * @param pList pointer to list

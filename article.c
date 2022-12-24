@@ -114,18 +114,14 @@ Article* createArticleInteractively() {
 
 void printArticle(Article* a) {
     if (a) {
-        printf("%-3d, %-4s, %-30s, %-20s, %-20s\n", a->id, mediaNames[a->media], a->title, a->author, a->lender);
+        printf("%-3d, %-4s, %-50s, %-20s, %-20s\n", a->id, mediaNames[a->media], a->title, a->author, a->lender);
     } else {
         printf("ERROR::%d::%s: article was NULL\n", __LINE__, __FILE__);
     }
 }
 
 int writeArticle(FILE* pf, Article* a) {
-    if (pf == NULL) {
-        perror("Error: ");
-    }
     if (a) {
-        printf("%p\n", a->author);
         return fprintf(pf, "%d,%d,%s,%s,%s\n", a->id, a->media, a->title, a->author == NULL ? "-1" : a->author, a->lender);
     } else {
         printf("ERROR::%d::%s: article was NULL\n", __LINE__, __FILE__);
@@ -135,6 +131,7 @@ int writeArticle(FILE* pf, Article* a) {
 
 Article* readArticle(FILE* pf) {
     int ret;
+    // better solution without multiple buffers?
     char tmpTitle[128], tmpAuthor[128], tmpLender[128];
     Article* a = malloc(sizeof(Article));
     if (a) {
@@ -155,8 +152,6 @@ Article* readArticle(FILE* pf) {
         }
         // author
         if (strcmp(tmpAuthor, "-1\0")) {
-            printf("author ist nicht null\n");
-            printf("%c\n", tmpAuthor[0]);
             a->author = malloc(strlen(tmpAuthor)+1);
             if (a->author) {
                 strcpy(a->author, tmpAuthor);
@@ -166,13 +161,13 @@ Article* readArticle(FILE* pf) {
                 return NULL;
             }
         } else {
-            printf("author ist null\n");
             a->author = NULL;
         }
         // lender
         a->lender = malloc(strlen(tmpLender)+1);
         if (a->lender) {
             strcpy(a->lender, tmpLender);
+            printf("%s\n", a->lender);
         } else {
             printf("ERROR::%d::%s: allocating lender\n", __LINE__, __FILE__);
             free(a);
