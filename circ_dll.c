@@ -100,7 +100,7 @@ int removeFirst(List* pList) {
     return removeNode(pList->head.pNext);
 }
 
-void setCurrentToHead(List* pList) {
+void setCurrentToFirst(List* pList) {
     pList->pCurr = pList->head.pNext;
 }
 
@@ -171,8 +171,8 @@ int getLength(List* pList) {
     return n;
 }
 
-int hasNext(List* pList) {
-    if (pList->pCurr->pNext->pData) {
+int hasCurrent(List* pList) {
+    if (pList->pCurr->pData) {
         return 1;
     } else {
         return 0;

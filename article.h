@@ -40,6 +40,16 @@ Article* createArticle(Media media, char* title, char* author, char* lender);
 */
 Article* createArticleInteractively();
 
+int getId(Article* pArticle);
+
+int getMedia(Article* pArticle);
+
+char* getTitle(Article* pArticle);
+
+char* getAuthor(Article* pArticle);
+
+char* getLender(Article* pArticle);
+
 /**
  * Prints a given article to the console.
  * @param pArticle pointer to struct article

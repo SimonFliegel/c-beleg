@@ -112,6 +112,46 @@ Article* createArticleInteractively() {
     return a;
 }
 
+int getId(Article* a) {
+    if (a == NULL) {
+        printf("ERROR::%d::%s: article was null\n", __LINE__, __FILE__);
+        return -1;
+    }
+    return a->id;
+}
+
+int getMedia(Article* a) {
+    if (a == NULL) {
+        printf("ERROR::%d::%s: article was null\n", __LINE__, __FILE__);
+        return -1;
+    }
+    return a->media;
+}
+
+char* getTitle(Article* a) {
+    if (a == NULL) {
+        printf("ERROR::%d::%s: article was null\n", __LINE__, __FILE__);
+        return NULL;
+    }
+    return a->title;
+}
+
+char* getAuthor(Article* a) {
+    if (a == NULL) {
+        printf("ERROR::%d::%s: article was null\n", __LINE__, __FILE__);
+        return NULL;
+    }
+    return a->author;
+}
+
+char* getLender(Article* a) {
+    if (a == NULL) {
+        printf("ERROR::%d::%s: article was null\n", __LINE__, __FILE__);
+        return NULL;
+    }
+    return a->lender;
+}
+
 void printArticle(Article* a) {
     if (a) {
         printf("%-3d, %-4s, %-50s, %-20s, %-20s\n", a->id, mediaNames[a->media], a->title, a->author, a->lender);
@@ -137,7 +177,6 @@ Article* readArticle(FILE* pf) {
     if (a) {
         ret = fscanf(pf, "%d,%d,%[^,],%[^,],%[^,\n]", &(a->id), (int*)&(a->media), tmpTitle, tmpAuthor, tmpLender);
         if (ret <= 0) {
-            printf("FEHLER::%d::%s: Es konnte nichts eingelesen werden\n", __LINE__, __FILE__);
             free(a);
             return NULL;
         }
@@ -167,7 +206,6 @@ Article* readArticle(FILE* pf) {
         a->lender = malloc(strlen(tmpLender)+1);
         if (a->lender) {
             strcpy(a->lender, tmpLender);
-            printf("%s\n", a->lender);
         } else {
             printf("ERROR::%d::%s: allocating lender\n", __LINE__, __FILE__);
             free(a);
