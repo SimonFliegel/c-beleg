@@ -1,5 +1,5 @@
-/* Name:
-MatrNr.: */
+/* Name: Simon Fliegel
+MatrNr.: 53043*/
 
 /**************************************************************/
 
@@ -33,80 +33,79 @@ Article* createArticle(Media media, char* title, char* author, char* lender) {
     return NULL;
 }
 
-// Repeat instead of cancellation?
 Article* createArticleInteractively() {
     Article* a = malloc(sizeof(Article));
-    if (a) {
-        // media type
-        printf("ausgeliehenes Medium ('b'-Buch / 'c'-CD / 'd'-DVD): ");
-        fgets(buf, sizeof(buf), stdin);
-        if (strlen(buf)-1 != 1) {
-            printf("FEHLER: unerwartete Eingabe ('b' / 'c' / 'd')\nAbbruch...\n");
-            free(a);
-            return NULL;
-        }
-        switch(buf[0]) {
-            case 'b': a->media = Buch; break;
-            case 'c': a->media = Cd; break;
-            case 'd': a->media = Dvd; break;
-            default: {
-                printf("FEHLER: Eingabe muss entweder 'b'=Buch, 'c'=CD, 'd'=DVD entsprechen\nAbbruch...\n");
-                free(a);
-                return NULL;
-            }
-        }
-        // title
-        printf("Titel: ");
-        fgets(buf, sizeof(buf), stdin);
-        if (strlen(buf)-1 == 0) {
-            printf("FEHLER: Titel muss mindestens ein Zeichen enthalten\nAbbruch...\n");
-            free(a);
-            return NULL;
-        }
-        buf[strlen(buf)-1] = '\0';
-        a->title = malloc((strlen(buf)+1));
-        if (a->title) {
-            strcpy(a->title, buf);
-        } else {
-            printf("ERROR::%d::%s: allocating title\n", __LINE__, __FILE__);
-            free(a);
-            return NULL;
-        }
-        // author
-        printf("Autor/ Interpret (wenn vorhanden): ");
-        fgets(buf, sizeof(buf), stdin);
-        buf[strlen(buf)-1] = '\0';
-        if (strlen(buf)) { // not empty
-            a->author = malloc((strlen(buf)+1));
-            if (a->author) {
-                strcpy(a->author, buf);
-            } else {
-                printf("ERROR::%d::%s: allocating author\n", __LINE__, __FILE__);
-                free(a);
-                return NULL;
-            }
-        } else { // empty
-            a->author = NULL;
-        }
-        // lender
-        printf("ausleihende Person: ");
-        fgets(buf, sizeof(buf), stdin);
-        if (strlen(buf)-1 == 0) {
-            printf("FEHLER: Name der ausleihenden Person muss mindestens ein Zeichen enthalten\nAbbruch...\n");
-            free(a);
-            return NULL;
-        }
-        buf[strlen(buf)-1] = '\0';
-        a->lender = malloc((strlen(buf)+1));
-        if (a->lender) {
-            strcpy(a->lender, buf);
-        } else {
-            printf("ERROR::%d::%s: allocating lender\n", __LINE__, __FILE__);
-            free(a);
-            return NULL;
-        }
-    } else {
+    if (a == NULL) {
         printf("ERROR::%d::%s: creating article\n", __LINE__, __FILE__);
+        return NULL;
+    }
+    // media type
+    printf("ausgeliehenes Medium ('b'-Buch / 'c'-CD / 'd'-DVD): ");
+    fgets(buf, sizeof(buf), stdin);
+    if (strlen(buf)-1 != 1) {
+        printf("FEHLER: unerwartete Eingabe ('b' / 'c' / 'd')\nAbbruch...\n");
+        free(a);
+        return NULL;
+    }
+    switch(buf[0]) {
+        case 'b': a->media = Buch; break;
+        case 'c': a->media = Cd; break;
+        case 'd': a->media = Dvd; break;
+        default: {
+            printf("FEHLER: Eingabe muss entweder 'b'=Buch, 'c'=CD, 'd'=DVD entsprechen\nAbbruch...\n");
+            free(a);
+            return NULL;
+        }
+    }
+    // title
+    printf("Titel: ");
+    fgets(buf, sizeof(buf), stdin);
+    if (strlen(buf)-1 == 0) {
+        printf("FEHLER: Titel muss mindestens ein Zeichen enthalten\nAbbruch...\n");
+        free(a);
+        return NULL;
+    }
+    buf[strlen(buf)-1] = '\0';
+    a->title = malloc((strlen(buf)+1));
+    if (a->title) {
+        strcpy(a->title, buf);
+    } else {
+        printf("ERROR::%d::%s: allocating title\n", __LINE__, __FILE__);
+        free(a);
+        return NULL;
+    }
+    // author
+    printf("Autor/ Interpret (wenn vorhanden): ");
+    fgets(buf, sizeof(buf), stdin);
+    buf[strlen(buf)-1] = '\0';
+    if (strlen(buf)) { // not empty
+        a->author = malloc((strlen(buf)+1));
+        if (a->author) {
+            strcpy(a->author, buf);
+        } else {
+            printf("ERROR::%d::%s: allocating author\n", __LINE__, __FILE__);
+            free(a);
+            return NULL;
+        }
+    } else { // empty
+        a->author = NULL;
+    }
+    // lender
+    printf("ausleihende Person: ");
+    fgets(buf, sizeof(buf), stdin);
+    if (strlen(buf)-1 == 0) {
+        printf("FEHLER: Name der ausleihenden Person muss mindestens ein Zeichen enthalten\nAbbruch...\n");
+        free(a);
+        return NULL;
+    }
+    buf[strlen(buf)-1] = '\0';
+    a->lender = malloc((strlen(buf)+1));
+    if (a->lender) {
+        strcpy(a->lender, buf);
+    } else {
+        printf("ERROR::%d::%s: allocating lender\n", __LINE__, __FILE__);
+        free(a);
+        return NULL;
     }
     a->id = counter++;
     return a;
@@ -154,7 +153,7 @@ char* getLender(Article* a) {
 
 void printArticle(Article* a) {
     if (a) {
-        printf("%-3d, %-4s, %-50s, %-20s, %-20s\n", a->id, mediaNames[a->media], a->title, a->author, a->lender);
+        printf("%-2d |  %-4s  %-50s  %-20s  %-20s\n", a->id, mediaNames[a->media], a->title, a->author, a->lender);
     } else {
         printf("ERROR::%d::%s: article was NULL\n", __LINE__, __FILE__);
     }
@@ -162,7 +161,8 @@ void printArticle(Article* a) {
 
 int writeArticle(FILE* pf, Article* a) {
     if (a) {
-        return fprintf(pf, "%d,%d,%s,%s,%s\n", a->id, a->media, a->title, a->author == NULL ? "-1" : a->author, a->lender);
+        fprintf(pf, "%d,%d,%s,%s,%s\n", a->id, a->media, a->title, a->author == NULL ? "-1" : a->author, a->lender);
+        return OK;
     } else {
         printf("ERROR::%d::%s: article was NULL\n", __LINE__, __FILE__);
         return FAIL;
@@ -171,7 +171,6 @@ int writeArticle(FILE* pf, Article* a) {
 
 Article* readArticle(FILE* pf) {
     int ret;
-    // better solution without multiple buffers?
     char tmpTitle[128], tmpAuthor[128], tmpLender[128];
     Article* a = malloc(sizeof(Article));
     if (a) {

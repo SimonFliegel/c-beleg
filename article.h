@@ -1,26 +1,27 @@
-/* Name:
-MatrNr.: */
+/* Name: Simon Fliegel
+MatrNr.: 53043*/
 
 /********************************************************************/
 
 #include <stdio.h>
 
-#define OK 1
-#define FAIL 0
+#define OK 0
+#define FAIL 1
 
-typedef enum media {
+typedef enum {
     Buch, // = 0
     Cd,   // = 1
     Dvd,  // = 2
 } Media;
 
-typedef struct article {
+typedef struct {
     int id;
     Media media;
     char* title;
     char* author;
     char* lender;
 } Article;
+
 
 /******************************Functions*****************************/
 
@@ -40,14 +41,34 @@ Article* createArticle(Media media, char* title, char* author, char* lender);
 */
 Article* createArticleInteractively();
 
+/**
+ * @param pArticle pointer to a struct article
+ * @return ID of a given Article
+*/
 int getId(Article* pArticle);
 
+/**
+ * @param pArticle pointer to a struct article
+ * @return media-type (int) of a given Article
+*/
 int getMedia(Article* pArticle);
 
+/**
+ * @param pArticle pointer to a struct article
+ * @return title string of a given Article
+*/
 char* getTitle(Article* pArticle);
 
+/**
+ * @param pArticle pointer to a struct article
+ * @return author string of a given Article
+*/
 char* getAuthor(Article* pArticle);
 
+/**
+ * @param pArticle pointer to a struct article
+ * @return lender string of a given Article
+*/
 char* getLender(Article* pArticle);
 
 /**

@@ -1,5 +1,5 @@
-/* Name:
-MatrNr.: */
+/* Name: Simon Fliegel
+MatrNr.: 53043*/
 
 /*****************************************************************/
 
@@ -100,10 +100,6 @@ int removeFirst(List* pList) {
     return removeNode(pList->head.pNext);
 }
 
-void setCurrentToFirst(List* pList) {
-    pList->pCurr = pList->head.pNext;
-}
-
 void* getCurrent(List* pList) {
     if (pList->pCurr == NULL) {
         printf("ERROR::%d::%s: pCurr==NULL\n", __LINE__, __FILE__);
@@ -136,7 +132,7 @@ void* getNext(List* pList) {
         return NULL;
     }
     pList->pCurr = pList->pCurr->pNext;
-    return pList->pCurr->pPrev->pData;
+    return pList->pCurr->pData;
 }
 
 // head not included in indexing
@@ -171,11 +167,26 @@ int getLength(List* pList) {
     return n;
 }
 
-int hasCurrent(List* pList) {
-    if (pList->pCurr->pData) {
-        return 1;
-    } else {
-        return 0;
+void sortList(List* pList, int (*compare)(const void*, const void*)) {
+    if (isEmpty(pList)) {
+        printf("ERROR::%d::%s: list is empty\n", __LINE__, __FILE__);
+        return;
+    }
+    Node* curr = pList->head.pNext;
+    Node* index;
+    void* tmp;
+
+    while (curr->pNext->pData) {
+        index = curr->pNext;
+        while (index->pData) {
+            if (compare(curr->pData, index->pData) > 0) {
+                tmp = curr->pData;
+                curr->pData = index->pData;
+                index->pData = tmp;
+            }
+            index = index->pNext;
+        }
+        curr = curr->pNext;
     }
 }
 
@@ -189,6 +200,4 @@ void deleteList(List* pList) {
     }
     free(pList);
 }
-
-
 

@@ -1,5 +1,5 @@
-/* Name:
-MatrNr.:*/
+/* Name: Simon Fliegel
+MatrNr.: 53043*/
 /****************************************************************************/
 
 #include <stdlib.h>
@@ -33,8 +33,18 @@ void processString(char** s) {
 }
 
 // private
+int compareInt(const void* id1, const void* id2) {
+    if (*(int*)id1 > *(int*)id2) return 1;
+    else if(*(int*)id1 > *(int*)id2) return -1;
+    else return 0;
+}
+
+int compareString(const void* str1, const void* str2) {
+    return strcmp((char*)str1, (char*)str2);
+}
+
+// private
 List* searchByString(List* articles, Category cat, char* searchString) {
-    Article* current;
     char* articleString;
     List* results = createList();
     if (results == NULL) {
@@ -43,13 +53,12 @@ List* searchByString(List* articles, Category cat, char* searchString) {
     }
 
     processString(&searchString);
-    setCurrentToFirst(articles);
-    while (getCurrent(articles)) {
-        current = getCurrent(articles);
+    for (Article* curr = (Article*)getFirst(articles); curr; curr = (Article*)getNext(articles)) {
+        curr = getCurrent(articles);
         switch (cat) {
-            case Title: articleString = getTitle(current); break;
-            case Author: articleString = getAuthor(current); break;
-            case Lender: articleString = getLender(current); break;
+            case Title: articleString = getTitle(curr); break;
+            case Author: articleString = getAuthor(curr); break;
+            case Lender: articleString = getLender(curr); break;
             default : {
                 printf("ERROR::%d::%s: wrong category\n", __LINE__, __FILE__);
                 return NULL;
@@ -58,9 +67,8 @@ List* searchByString(List* articles, Category cat, char* searchString) {
         processString(&articleString);
         // returns null if articleString does not contain searchString
         if (strstr(articleString, searchString)) {
-            append(results, current);
+            append(results, curr);
         }
-        getNext(articles);
     }
     return results;
 }
@@ -87,46 +95,39 @@ List* getArticles() {
     return articles;
 }
 
-// doesn't print last article -> DEBUG
 void displayArticles(List* articles) {
-    setCurrentToFirst(articles);
-    while (getCurrent(articles)) {
-        printArticle((Article*)getCurrent(articles));
-        getNext(articles);
+    for (Article* a = (Article*)getFirst(articles); a; a = (Article*)getNext(articles)) {
+        printArticle(a);
     }
 }
+
+// TODO: Sort-Methods
 
 Article* searchById(List* articles, int id) {
     Article* result = malloc(sizeof(Article));
     if (result == NULL) {
         printf("ERROR::%d::%s: creating search result article\n", __LINE__, __FILE__);
     }
-    setCurrentToFirst(articles);
-    while (getCurrent(articles)) {
-        result = (Article*)getCurrent(articles);
+
+    for(Article* result = (Article*)getFirst(articles); result; result = (Article*)getNext(articles)) {
         if (result->id == id) {
             return result;
         }
-        getNext(articles);
     }
     printf("Es konnte kein Artikel zur gesuchten ID %d gefunden werden\n", id);
     return NULL;
 }
 
 List* searchByMedia(List* articles, Media media) {
-    Article* current;
     List* results = createList();
     if (results == NULL) {
         printf("ERROR::%d::%s: creating list\n", __LINE__, __FILE__);
     }
 
-    setCurrentToFirst(articles);
-    while (hasCurrent(articles)) {
-        current = getCurrent(articles);
-        if (media == getMedia(current)) {
-            append(results, current);
+    for(Article* curr = (Article*)getFirst(articles); curr; curr = (Article*)getNext(articles)) {
+        if (media == getMedia(curr)) {
+            append(results, curr);
         }
-        getNext(articles);
     }
     return results;
 }
@@ -143,4 +144,26 @@ List* searchByLender(List* articles, char* lender) {
     return searchByString(articles, Lender, lender);
 }
 
-// TODO saveArticles
+int saveArticles(List* articles) {
+    FILE* pf;
+    int ret;
+
+    pf = fopen("data/articles.csv", "wt");
+    if (pf == NULL) {
+        perror("Error");
+        return FAIL;
+    }
+    
+    for (Article* curr = (Article*)getFirst(articles); curr; curr = (Article*)getNext(articles)) {
+        printArticle(curr);
+        ret = writeArticle(pf, curr);
+        if (ret) {
+            printf("ERROR::%d::%s: writing article to file\n", __LINE__, __FILE__);
+            fclose(pf);
+            return FAIL;
+        }
+    }
+    
+    fclose(pf);
+    return OK;
+}
