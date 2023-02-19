@@ -24,20 +24,48 @@ List* getArticles();
 int saveArticles(List* articles);
 
 /**
+ * Removes a given article from a list and frees memory
+ * @param articles pointer to a list of articles
+ * @param old pointer to the article which should be deleted
+ * @return void
+*/
+void removeArticleFromList(List* articles, Article* old);
+
+/**
  * Prints every article in a given list
  * @param articles pointer to a list of articles
  * @return void
 */
 void displayArticles(List* articles);
 
+/**
+ * @param articles pointer to a list of articles
+ * @return List* pointer to sorted list
+*/
 List* sortById(List* articles);
 
+/**
+ * @param articles pointer to a list of articles
+ * @return List* pointer to sorted list
+*/
 List* sortByMedia(List* articles);
 
+/**
+ * @param articles pointer to a list of articles
+ * @return List* pointer to sorted list
+*/
 List* sortByTitle(List* articles);
 
+/**
+ * @param articles pointer to a list of articles
+ * @return List* pointer to sorted list
+*/
 List* sortByAuthor(List* articles);
 
+/**
+ * @param articles pointer to a list of articles
+ * @return List* pointer to sorted list
+*/
 List* sortByLender(List* articles);
 
 /**

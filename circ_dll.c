@@ -53,6 +53,24 @@ int removeNode(Node* pNode) {
     return FAIL;
 }
 
+List* copyList(List* pList) {
+    List* copy = malloc(sizeof(List));
+    if (copy) {
+        // initial setup
+        copy->head.pNext = (Node*)copy;
+        copy->head.pPrev = (Node*)copy;
+        copy->head.pData = NULL;
+        copy->pCurr = NULL;
+        // copying data
+        pList->pCurr = pList->head.pNext;
+        while(pList->pCurr->pData) {
+            insertBehindNode(copy, copy->head.pPrev, pList->pCurr->pData);
+            pList->pCurr = pList->pCurr->pNext;
+        }
+    }
+    return copy;
+}
+
 int isEmpty(List* pList) {
     if (pList->head.pNext == (Node*)pList) {
         return 1;
@@ -110,7 +128,6 @@ void* getCurrent(List* pList) {
 
 void* getFirst(List* pList) {
     if (isEmpty(pList)) {
-        printf("ERROR::%d::%s: list is empty\n", __LINE__, __FILE__);
         return NULL;
     }
     pList->pCurr = pList->head.pNext;
@@ -167,12 +184,13 @@ int getLength(List* pList) {
     return n;
 }
 
-void sortList(List* pList, int (*compare)(const void*, const void*)) {
+List* sortList(List* pList, int (*compare)(const void*, const void*)) {
     if (isEmpty(pList)) {
         printf("ERROR::%d::%s: list is empty\n", __LINE__, __FILE__);
-        return;
+        return NULL;
     }
-    Node* curr = pList->head.pNext;
+    List* pSorted = copyList(pList);
+    Node* curr = pSorted->head.pNext;
     Node* index;
     void* tmp;
 
@@ -188,6 +206,7 @@ void sortList(List* pList, int (*compare)(const void*, const void*)) {
         }
         curr = curr->pNext;
     }
+    return pSorted;
 }
 
 void deleteList(List* pList) {

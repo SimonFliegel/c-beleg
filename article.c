@@ -43,7 +43,7 @@ Article* createArticleInteractively() {
     printf("ausgeliehenes Medium ('b'-Buch / 'c'-CD / 'd'-DVD): ");
     fgets(buf, sizeof(buf), stdin);
     if (strlen(buf)-1 != 1) {
-        printf("FEHLER: unerwartete Eingabe ('b' / 'c' / 'd')\nAbbruch...\n");
+        printf("FEHLER: unerwartete Eingabe ('b' / 'c' / 'd')\n");
         free(a);
         return NULL;
     }
@@ -52,7 +52,7 @@ Article* createArticleInteractively() {
         case 'c': a->media = Cd; break;
         case 'd': a->media = Dvd; break;
         default: {
-            printf("FEHLER: Eingabe muss entweder 'b'=Buch, 'c'=CD, 'd'=DVD entsprechen\nAbbruch...\n");
+            printf("FEHLER: Eingabe muss entweder 'b'=Buch, 'c'=CD, 'd'=DVD entsprechen\n");
             free(a);
             return NULL;
         }
@@ -61,7 +61,7 @@ Article* createArticleInteractively() {
     printf("Titel: ");
     fgets(buf, sizeof(buf), stdin);
     if (strlen(buf)-1 == 0) {
-        printf("FEHLER: Titel muss mindestens ein Zeichen enthalten\nAbbruch...\n");
+        printf("FEHLER: Titel muss mindestens ein Zeichen enthalten\n");
         free(a);
         return NULL;
     }
@@ -94,7 +94,7 @@ Article* createArticleInteractively() {
     printf("ausleihende Person: ");
     fgets(buf, sizeof(buf), stdin);
     if (strlen(buf)-1 == 0) {
-        printf("FEHLER: Name der ausleihenden Person muss mindestens ein Zeichen enthalten\nAbbruch...\n");
+        printf("FEHLER: Name der ausleihenden Person muss mindestens ein Zeichen enthalten\n");
         free(a);
         return NULL;
     }
@@ -153,7 +153,7 @@ char* getLender(Article* a) {
 
 void printArticle(Article* a) {
     if (a) {
-        printf("%-2d |  %-4s  %-50s  %-20s  %-20s\n", a->id, mediaNames[a->media], a->title, a->author, a->lender);
+        printf("%-2d |  %-4s  %-50s  %-20s  %-20s\n", a->id, mediaNames[a->media], a->title, a->author ? a->author : "", a->lender);
     } else {
         printf("ERROR::%d::%s: article was NULL\n", __LINE__, __FILE__);
     }

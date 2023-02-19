@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "../circ_dll.h"
 
 int compare(const void* d1, const void* d2) {
-    printf("cmp\n");
     int v1 = *(int*)d1;
     int v2 = *(int*)d2;
 
@@ -12,20 +12,22 @@ int compare(const void* d1, const void* d2) {
     else return 0;
 }
 
+int compareString(const void* str1, const void* str2) {
+    return strcmp((char*)str1, (char*)str2);
+}
+
 int main() {
     List* pList = createList();
-    int i1=1, i2=2, i3=3, i4=4, i5=5, i6=6, i7=7, i8=8;
+    List* pSorted;
+    char* strs[5] = {"Dumbledore", "Bellatrix", "Dobby", "Ron", "Hermine"};
+    int len = sizeof(strs) / sizeof(strs[0]);
+    for (int i = 0; i < len; i++) {
+        append(pList, strs[i]);
+    }
 
-    append(pList, &i3);
-    append(pList, &i5);
-    append(pList, &i2);
-    append(pList, &i4);
-    append(pList, &i5);
-    append(pList, &i1);
-
-    sortList(pList, compare);
+    pSorted = sortList(pList, compareString);
     
-    for (int* a = (int*)getFirst(pList); a; a = (int*)getNext(pList)) {
-        printf("%d\n", *a);
+    for (char* a = (char*)getFirst(pSorted); a; a = (char*)getNext(pSorted)) {
+        printf("%s\n", a);
     }
 }

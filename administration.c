@@ -33,14 +33,41 @@ void processString(char** s) {
 }
 
 // private
-int compareInt(const void* id1, const void* id2) {
-    if (*(int*)id1 > *(int*)id2) return 1;
-    else if(*(int*)id1 > *(int*)id2) return -1;
+int compareId(const void* a1, const void* a2) {
+    int id1 = getId((Article*)a1);
+    int id2 = getId((Article*)a2);
+    if (id1 > id2) return 1;
+    else if (id1 < id2) return -1;
     else return 0;
 }
 
-int compareString(const void* str1, const void* str2) {
-    return strcmp((char*)str1, (char*)str2);
+// private
+int compareMedia(const void* a1, const void* a2) {
+    int med1 = getMedia((Article*)a1);
+    int med2 = getMedia((Article*)a2);
+    if (med1 > med2) return 1;
+    else if (med1 < med2) return -1;
+    else return 0;
+}
+
+// private
+int compareTitle(const void* a1, const void* a2) {
+    return strcmp(getTitle((Article*)a1), getTitle((Article*)a2));
+}
+
+// private
+int compareAuthor(const void* a1, const void* a2) {
+    char* auth1 = getAuthor((Article*)a1);
+    char* auth2 = getAuthor((Article*)a2);
+    if (auth1 == NULL && auth2 == NULL) return 0;
+    else if (auth1 == NULL) return 1;
+    else if (auth2 == NULL) return -1;
+    else return strcmp(auth1, auth2);
+}
+
+// private
+int compareLender(const void* a1, const void* a2) {
+    return strcmp(getLender((Article*)a1), getLender((Article*)a2));
 }
 
 // private
@@ -63,6 +90,10 @@ List* searchByString(List* articles, Category cat, char* searchString) {
                 printf("ERROR::%d::%s: wrong category\n", __LINE__, __FILE__);
                 return NULL;
             }
+        }
+        if (articleString == NULL) {
+            // when author is null
+            continue;
         }
         processString(&articleString);
         // returns null if articleString does not contain searchString
@@ -101,7 +132,25 @@ void displayArticles(List* articles) {
     }
 }
 
-// TODO: Sort-Methods
+List* sortById(List* articles) {
+    return sortList(articles, compareId);
+}
+
+List* sortByMedia(List* articles) {
+    return sortList(articles, compareMedia);
+}
+
+List* sortByTitle(List* articles) {
+    return sortList(articles, compareTitle);
+}
+
+List* sortByAuthor(List* articles) {
+    return sortList(articles, compareAuthor);
+}
+
+List* sortByLender(List* articles) {
+    return sortList(articles, compareLender);
+}
 
 Article* searchById(List* articles, int id) {
     Article* result = malloc(sizeof(Article));
@@ -155,7 +204,6 @@ int saveArticles(List* articles) {
     }
     
     for (Article* curr = (Article*)getFirst(articles); curr; curr = (Article*)getNext(articles)) {
-        printArticle(curr);
         ret = writeArticle(pf, curr);
         if (ret) {
             printf("ERROR::%d::%s: writing article to file\n", __LINE__, __FILE__);
@@ -166,4 +214,13 @@ int saveArticles(List* articles) {
     
     fclose(pf);
     return OK;
+}
+
+void removeArticleFromList(List* articles, Article* old) {
+    for (Article* a = (Article*)getFirst(articles); a; a = (Article*)getNext(articles)) {
+        if (a == old) {
+            removeCurrent(articles);
+            deleteArticle(old);
+        }
+    }
 }

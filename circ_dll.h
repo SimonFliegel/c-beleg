@@ -126,6 +126,13 @@ void* getIndexed(List* pList, int index);
  * @param pList pointer to list
  * @param compare function pointer to a method of type int(*compare)(const void*, const void*)
  * which returns negative value if first value is smaller, positive value if it is greater and 0 if they are equal
- * @return void
+ * @return pointer to a sorted List
 */
-void sortList(List* pList, int (*compare)(const void*, const void*));
+List* sortList(List* pList, int (*compare)(const void*, const void*));
+
+/**
+ * Creates the copy of a given list
+ * @param pList pointer to list
+ * @return List* pointer to the copy
+*/
+List* copyList(List* pList);
