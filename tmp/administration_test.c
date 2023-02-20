@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "administration.h"
+#include "../administration.h"
 
 int main() {
     FILE* pf;

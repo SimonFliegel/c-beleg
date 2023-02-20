@@ -8,11 +8,28 @@ MatrNr.: 53043*/
 #include <string.h>
 #include "article.h"
 
-/************************ FUNCTIONS ***************************/
+/**********************Utility Functions***********************/
+// private
+int getAvailableId() {
+    FILE* pf;
+    int maxId = -1;
+
+    pf = fopen("data/articles.csv", "rt");
+    if (pf == NULL) {
+        perror("Error");
+        return -1;
+    }
+    // assuming maxId is the last entry at all times
+    while(fscanf(pf, "%d,%*[^\n]", &maxId) != EOF);
+
+    fclose(pf);
+
+    return maxId+1;
+}
+
+/************************ Functions ***************************/
 
 const char* mediaNames[3] = {"Buch", "CD", "DVD"};
-static int counter;
-char buf[128];
 
 Article* createArticle(Media media, char* title, char* author, char* lender) {
     if (title && lender) {
@@ -22,7 +39,7 @@ Article* createArticle(Media media, char* title, char* author, char* lender) {
             a->title = title;
             a->author = author;
             a->lender = lender;
-            a->id = counter++;
+            a->id = getAvailableId();
             return a;
         } else {
             printf("ERROR::%d::%s: creating article\n", __LINE__, __FILE__);
@@ -34,6 +51,7 @@ Article* createArticle(Media media, char* title, char* author, char* lender) {
 }
 
 Article* createArticleInteractively() {
+    char buf[128];
     Article* a = malloc(sizeof(Article));
     if (a == NULL) {
         printf("ERROR::%d::%s: creating article\n", __LINE__, __FILE__);
@@ -107,7 +125,7 @@ Article* createArticleInteractively() {
         free(a);
         return NULL;
     }
-    a->id = counter++;
+    a->id = getAvailableId();
     return a;
 }
 

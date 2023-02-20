@@ -98,3 +98,6 @@ Article* readArticle(FILE* pf);
  * @return void
 */
 void deleteArticle(Article* pArticle);
+
+// temporary
+int getAvailableId();

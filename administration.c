@@ -163,8 +163,7 @@ Article* searchById(List* articles, int id) {
             return result;
         }
     }
-    printf("Es konnte kein Artikel zur gesuchten ID %d gefunden werden\n", id);
-    return NULL;
+    return NULL; // if there is no result
 }
 
 List* searchByMedia(List* articles, Media media) {

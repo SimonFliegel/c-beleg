@@ -73,16 +73,16 @@ void searchByIdMenu() {
     fgets(buf, 128, stdin);
     buf[strlen(buf)-1] = '\0';
     if (!isValidId(buf)) {
-        printf("FEHLER: ID darf nur Ziffern enthalten und hat maximal zwei Stellen\n");
+        printf("FEHLER: ungültige ID\n");
         return;
     }
     id = atoi(buf);
     result = searchById(articles, id);
-    if (result == NULL) {
+    if (result) {
+        printResult(result, " Suchergebnis ");
+    } else {
         printf("Es konnte kein ausgeliehenes Medium zur gesuchten ID %d gefunden werden\n", id);
-        return;
-    } 
-    printResult(result, " Suchergebnis ");
+    }
 }
 
 void searchByMediaMenu() {
@@ -95,16 +95,16 @@ void searchByMediaMenu() {
     fgets(buf, 128, stdin);
     action = buf[0];
     switch(action) {
-        case 'b': results = searchByMedia(articles, Buch); break;
-        case 'c': results = searchByMedia(articles, Cd); break;
-        case 'd': results = searchByMedia(articles, Dvd); break;
+        case 'b': case 'B': results = searchByMedia(articles, Buch); break;
+        case 'c': case 'C': results = searchByMedia(articles, Cd); break;
+        case 'd': case 'D': results = searchByMedia(articles, Dvd); break;
         default: printf("FEHLER: Eingabe muss 'b'-Buch, 'c'-CD oder 'd'-DVD entsprechen"); return;
     }
-    if (results == NULL) {
+    if (isEmpty(results)) {
+        printResults(results, " Suchergebnisse ");
+    } else {
         printf("Es konnten keine ausgeliehenen Medien dieser Art gefunden werden\n");
-        return;
     }
-    printResults(results, " Suchergebnisse ");
 }
 
 void searchByTitleMenu() {
@@ -116,11 +116,11 @@ void searchByTitleMenu() {
     fgets(buf, 128, stdin);
     buf[strlen(buf)-1] = '\0';
     results = searchByTitle(articles, buf);
-    if (results == NULL) {
+    if (results) {
+        printResults(results, " Suchergebnisse ");
+    } else {
         printf("Es konnten keine ausgeliehnen Medien gefunden werden\n");
-        return;
     }
-    printResults(results, " Suchergebnisse ");
 }
 
 void searchByAuthorMenu() {
@@ -132,11 +132,11 @@ void searchByAuthorMenu() {
     fgets(buf, 128, stdin);
     buf[strlen(buf)-1] = '\0';
     results = searchByAuthor(articles, buf);
-    if (results == NULL) {
+    if (results) {
+        printResults(results, " Suchergebnisse ");
+    } else {
         printf("Es konnten keine ausgeliehenen Medien gefunden werden\n");
-        return;
     }
-    printResults(results, " Suchergebnisse ");
 }
 
 void searchByLenderMenu() {
@@ -148,31 +148,14 @@ void searchByLenderMenu() {
     fgets(buf, 128, stdin);
     buf[strlen(buf)-1] = '\0';
     results = searchByLender(articles, buf);
-    if (results == NULL) {
-        printf("Es konnten keine ausgeliehnen Medien gefunden werden\n");
-        return;
+    if (results) {
+        printResults(results, " Suchergebnisse ");
+    } else {
+        printf("Es konnten keine ausgeliehenen Medien gefunden werden\n");
     }
-    printResults(results, " Suchergebnisse ");
 }
 
 /****************************Sub Menus******************************/
-// Main Menu
-void printMenu() {
-    List* articles = getArticles();
-    system("clear");
-    printSeparator("", 1);
-    printSeparator(" Beleg von Simon Fliegel, Matrikelnr.: 53043 ", 0);
-    printSeparator(" Aufgabe: 4 | Darstellungsform: 1 (GTK+) ", 0);
-    printSeparator("", 1);
-    printf("Ausgeliehene Medien:\n\n");
-    printArticleHeader();
-    printSeparator("", 0);
-    displayArticles(articles);
-    printf("\n'h' für Hilfe\n");
-    printf("'q' zum Verlassen\n");
-    printf("\nAktion auswählen: ");
-}
-
 void printHelpMenu() {
     printSeparator(" Hilfe ", 1);
     printf("l - Alle ausgeliehenen Medien ausgeben\n");
@@ -180,8 +163,40 @@ void printHelpMenu() {
     printf("d - Medien entfernen\n");
     printf("s - Medien sortieren\n");
     printf("f - Medien durchsuchen\n");
-    printf("\nEingabe zum Verlassen: ");
-    fgets(buf, 128, stdin);
+}
+
+// Main Menu
+void printMenu(int helpEnabled) {
+    int ret;
+    char action;
+    List* articles = getArticles();
+    ret = system("clear");
+    if (ret != 0) {
+            printf("ERROR::%s::%d: Something went wrong\n", __FILE__, __LINE__);
+            return;
+        }
+    printSeparator("", 1);
+    printSeparator(" Beleg von Simon Fliegel, Matrikelnr.: 53043 ", 0);
+    printSeparator(" Aufgabe: 4 | Darstellungsform: 1 (GTK+) ", 0);
+    printSeparator("", 1);
+    printf("Ausgeliehene Medien:\n\n");
+    if (!isEmpty(articles)) {
+        printArticleHeader();
+        printSeparator("", 0);
+        displayArticles(articles);
+    } else {
+        printf("Noch keine ausgeliehenen Medien vorhanden\n");
+    }
+    printSeparator("", 0);
+    if (helpEnabled) {
+        printf("\n");
+        printHelpMenu();
+        printf("\n");
+    } else {
+        printf("\n'h' für Hilfe\n");
+    }
+    printf("'q' zum Verlassen\n");
+    printf("\nAktion auswählen: ");
 }
 
 void sortMenu() {
@@ -202,13 +217,18 @@ void sortMenu() {
     fgets(buf, 128, stdin);
     action = buf[0];
     switch (action) {
-        case 'i': case 'I': sortedArticles = sortById(articles);
-        case 'm': case 'M': sortedArticles = sortByMedia(articles);
-        case 't': case 'T': sortedArticles = sortByTitle(articles);
-        case 'a': case 'A': sortedArticles = sortByAuthor(articles);
-        case 'l': case 'L': sortedArticles = sortByLender(articles);
+        case 'i': case 'I': sortedArticles = sortById(articles); break;
+        case 'm': case 'M': sortedArticles = sortByMedia(articles); break;
+        case 't': case 'T': sortedArticles = sortByTitle(articles); break;
+        case 'a': case 'A': sortedArticles = sortByAuthor(articles); break;
+        case 'l': case 'L': sortedArticles = sortByLender(articles); break;
+        default: printf("Fehlerhafte Eingabe\n"); return;
     }
-    printResults(sortedArticles, " Sortierung ");
+    if (sortedArticles) {
+        printResults(sortedArticles, " Sortierung ");
+    } else {
+        printf("FEHLER: keine ausgeliehenen Medien zum Sortieren vorhanden\n");
+    }
     printf("\nEingabe zum Verlassen: ");
     fgets(buf, 128, stdin);
 }
@@ -222,7 +242,7 @@ void searchMenu() {
     printSeparator("", 0);
     printf("Durchsuchen nach...\n");
     printf("i - ID\n");
-    printf("m - Medium (Buch, CD, DVD)");
+    printf("m - Medium (Buch, CD, DVD)\n");
     printf("t - Titel\n");
     printf("a - Autor\n");
     printf("l - ausleihende Person\n");
@@ -235,21 +255,22 @@ void searchMenu() {
         case 't': case 'T': searchByTitleMenu(); break;
         case 'a': case 'A': searchByAuthorMenu(); break;
         case 'l': case 'L': searchByLenderMenu(); break;
+        default: printf("Fehlerhafte Eingabe\n");
     }
     printf("\nEingabe zum Verlassen: ");
     fgets(buf, 128, stdin);
 }
 
 void displayArticlesMenu() {
+    int ret;
     char action;
-    char subAction;
-    char respond;
-    int id;
-    Article* result;
     List* articles;
-    List* results;
     
-    system("clear");
+    ret = system("clear");
+    if (ret != 0) {
+        printf("ERROR::%s::%d: Something went wrong\n", __FILE__, __LINE__);
+        return;
+    }
     printSeparator(" Verliehene Medien ", 1);
     printArticleHeader();
     printSeparator("", 0);
@@ -262,47 +283,63 @@ void displayArticlesMenu() {
     fgets(buf, 128, stdin);
     action = buf[0];
     switch(action) {
-        case 's': sortMenu(); break;
-        case 'f': searchMenu(); break;
+        case 's': case 'S': sortMenu(); break;
+        case 'f': case 'F': searchMenu(); break;
         default: break;
     }
 }
 
-int addArticlesMenu() {
+void addArticlesMenu() {
+    int ret;
     char proceed = 'j';
     Article* new;
     List* articles = getArticles();
-    system("clear");
-    printSeparator(" Medien hinzufügen ", 1);
-    displayArticles(articles);
-    printSeparator("", 0);
     do {
+        ret = system("clear");
+        if (ret != 0) {
+            printf("ERROR::%s::%d: Something went wrong\n", __FILE__, __LINE__);
+            return;
+        }
+        printSeparator(" Medien hinzufügen ", 1);
+        if (!isEmpty(articles)) {
+            printArticleHeader();
+            printSeparator("", 0);
+            displayArticles(articles);
+        } else {
+            printf("Noch keine ausgeliehenen Medien vorhanden\n");
+        }
+        printSeparator("", 0);
         new = createArticleInteractively();
         if (new == NULL) {
             printf("Erneut versuchen (j/n)?: ");
             fgets(buf, 128, stdin);
-            if (buf[0] == 'j') continue;
+            if (buf[0] == 'j' || buf[0] == 'J') continue;
             else break;
         }
         printSeparator("", 0);
         printf("Zusammenfassung:\n");
         printArticle(new);
-        printf("Artikel wurde hinzugefügt:\n");
+        printf("\nArtikel wurde hinzugefügt...\n");
         append(articles, new);
-        printf("Weiteren Artikel hinzufügen (j/n)? ");
+        saveArticles(articles);
+        printf("\nWeiteren Artikel hinzufügen (j/n)? ");
         fgets(buf, sizeof(buf), stdin);
         proceed = buf[0];
-    } while (proceed == 'j');
-    saveArticles(articles);
-    return 0;
+    } while (proceed == 'j' || proceed == 'J');
 }
 
-int deleteArticlesMenu() {
+void deleteArticlesMenu() {
+    int ret;
     int id;
     char proceed = 'j';
     Article* old;
     List* articles = getArticles();
-    system("clear");
+    
+    ret = system("clear");
+    if (ret != 0) {
+        printf("ERROR::%s::%d: Something went wrong\n", __FILE__, __LINE__);
+        return;
+    }
     do {
         printSeparator(" Medien entfernen ", 1);
         displayArticles(articles);
@@ -311,10 +348,10 @@ int deleteArticlesMenu() {
         fgets(buf, 128, stdin);
         buf[strlen(buf)-1] = '\0';
         if (!isValidId(buf)) {
-            printf("FEHLER: ID darf nur Ziffern enthalten und hat maximal zwei Stellen\n");
+            printf("FEHLER: ungültige ID\n");
             printf("Erneut versuchen (j/n)?: ");
             fgets(buf, 128, stdin);
-            if (buf[0] == 'j') {
+            if (buf[0] == 'j' || buf[0] == 'J') {
                 continue;
             } else {
                 break;
@@ -326,7 +363,7 @@ int deleteArticlesMenu() {
             printArticle(old);
             printf("Medium wirklich löschen (j/n)?: ");
             fgets(buf, 128, stdin);
-            if (buf[0] == 'j') {
+            if (buf[0] == 'j' || buf[0] == 'J') {
                 removeArticleFromList(articles, old);
             }
         } else {
@@ -338,34 +375,41 @@ int deleteArticlesMenu() {
         printf("\nWeiteres Medium entfernen (j/n)?: ");
         fgets(buf, 128, stdin);
         proceed = buf[0];
-        system("clear");
-    } while (proceed == 'j');
+        ret = system("clear");
+        if (ret != 0) {
+            printf("ERROR::%s::%d: Something went wrong\n", __FILE__, __LINE__);
+            return;
+        }
+    } while (proceed == 'j' || proceed == 'J');
     saveArticles(articles);
-    return 0;
 }
 
 /********************* MAIN **************************/
 
 int main() {
     char menu;
+    int ret;
     do {
-        system("clear");
-        printMenu();
+        ret = system("clear");
+        if (ret != 0) {
+            printf("ERROR::%s::%d: Something went wrong\n", __FILE__, __LINE__);
+            return 1;
+        }
+        printMenu(0);
         fgets(buf, 128, stdin);
         menu = buf[0];
+        if (menu == 'h' || menu == 'H') {
+            printMenu(1);
+            fgets(buf, 128, stdin);
+            menu = buf[0];
+        }
         switch (menu) {
-            case 'l': displayArticlesMenu(); break;
-            case 'h': printHelpMenu(); break;
-            case 'a': addArticlesMenu(); break;
-            case 'd': deleteArticlesMenu(); break;
-            case 's': sortMenu(); break;
-            case 'f': searchMenu(); break;
+            case 'l': case 'L': displayArticlesMenu(); break;
+            case 'a': case 'A': addArticlesMenu(); break;
+            case 'd': case 'D': deleteArticlesMenu(); break;
+            case 's': case 'S': sortMenu(); break;
+            case 'f': case 'F': searchMenu(); break;
             default: printf("\nAnwendung verlassen...\n\n"); return 0;
         }
     } while (1);
 }
-
-
-
-
-
