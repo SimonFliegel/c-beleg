@@ -11,13 +11,13 @@ MatrNr.: 53043*/
 /********************************Functions**********************************/
 
 /**
- * Creates list, reads in articles from "data/articles.csv" 
+ * Creates list, reads in articles from "./articles.csv" 
  * @return List* to created list
 */
 List* getArticles();
 
 /**
- * Writes every article in a given list to "data/articles.csv"
+ * Writes every article in a given list to "./articles.csv"
  * @param articles pointer to a list of articles
  * @return 0 -> OK, 1 -> FAIL
 */

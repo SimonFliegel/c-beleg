@@ -8,13 +8,14 @@ MatrNr.: 53043*/
 #include <string.h>
 #include "article.h"
 
+
 /**********************Utility Functions***********************/
 // private
 int getAvailableId() {
     FILE* pf;
     int maxId = -1;
 
-    pf = fopen("data/articles.csv", "rt");
+    pf = fopen("articles.csv", "rt");
     if (pf == NULL) {
         perror("Error");
         return -1;

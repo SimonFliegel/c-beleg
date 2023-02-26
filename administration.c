@@ -107,21 +107,29 @@ List* searchByString(List* articles, Category cat, char* searchString) {
 /*****************************Functions**************************************/
 
 List* getArticles() {
+    FILE *pf_read, *pf_write;
     Article* a;
     List* articles = createList();
     if (articles == NULL) {
         printf("ERROR::%d::%s: creating article list\n", __LINE__, __FILE__);
         return articles;
     }
-    FILE* pf = fopen("data/articles.csv", "rt");
-    if (pf) {
-        while ((a = readArticle(pf)) != NULL) {
+    pf_read = fopen("articles.csv", "rt");
+    if (pf_read) {
+        while ((a = readArticle(pf_read)) != NULL) {
             append(articles, a);
         }
-        fclose(pf);
+        fclose(pf_read);
     } else {
-        perror("Error");
-        deleteList(articles);
+        // create file if it doesn't exist yet
+        pf_write = fopen("articles.csv", "wt");
+        if (pf_write == NULL) {
+            printf("ERROR::%s::%d: creating file\n", __FILE__, __LINE__);
+            return NULL;
+        } else {
+            // successfully created articles.csv
+            fclose(pf_write);
+        }
     }
     return articles;
 }
@@ -196,7 +204,7 @@ int saveArticles(List* articles) {
     FILE* pf;
     int ret;
 
-    pf = fopen("data/articles.csv", "wt");
+    pf = fopen("articles.csv", "wt");
     if (pf == NULL) {
         perror("Error");
         return FAIL;

@@ -8,13 +8,13 @@ MatrNr.: 53043*/
 #define OK 0
 #define FAIL 1
 
-typedef enum {
+typedef enum media{
     Buch, // = 0
     Cd,   // = 1
     Dvd,  // = 2
 } Media;
 
-typedef struct {
+typedef struct article{
     int id;
     Media media;
     char* title;
@@ -98,6 +98,3 @@ Article* readArticle(FILE* pf);
  * @return void
 */
 void deleteArticle(Article* pArticle);
-
-// temporary
-int getAvailableId();
